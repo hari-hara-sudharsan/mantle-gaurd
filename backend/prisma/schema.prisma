@@ -1,0 +1,117 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Enums
+enum UserRole {
+  USER
+  COMPLIANCE_OFFICER
+  AUDITOR
+  REGULATOR
+}
+
+enum TransactionStatus {
+  PENDING
+  REVIEW
+  APPROVED
+  BLOCKED
+}
+
+enum AuditStatus {
+  PENDING
+  GRANTED
+  REJECTED
+  COMPLETED
+}
+
+enum ReportType {
+  COMPLIANCE
+  RISK_ASSESSMENT
+  AUDIT
+  REGULATORY
+}
+
+// Models
+model User {
+  id              String   @id @default(uuid())
+  walletAddress   String   @unique
+  email           String?  @unique
+  role            UserRole @default(USER)
+  createdAt       DateTime @default(now())
+
+  // Relations
+  passports       CompliancePassport[]
+  transactions    Transaction[]
+  auditRequests   AuditRequest[]   @relation("AuditorRequests")   // Fixed
+  generatedReports Report[]
+
+  @@map("users")
+}
+
+model CompliancePassport {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  kycVerified Boolean  @default(false)
+  amlVerified Boolean  @default(false)
+  riskScore   Int      @default(0)
+  active      Boolean  @default(true)
+  issuedAt    DateTime @default(now())
+  expiresAt   DateTime?
+
+  @@map("compliance_passports")
+}
+
+model Transaction {
+  id                 String            @id @default(uuid())
+  userId             String
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  amount             String
+  status             TransactionStatus @default(PENDING)
+  riskScore          Int               @default(0)
+  txHash             String?
+  complianceDecision String?
+  createdAt          DateTime          @default(now())
+
+  auditRequests      AuditRequest[]
+  reports            Report[]
+
+  @@map("transactions")
+}
+
+model AuditRequest {
+  id            String      @id @default(uuid())
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  
+  auditorId     String
+  auditor       User        @relation("AuditorRequests", fields: [auditorId], references: [id])
+  
+  status        AuditStatus @default(PENDING)
+  reason        String?
+  createdAt     DateTime    @default(now())
+
+  @@map("audit_requests")
+}
+
+model Report {
+  id              String      @id @default(uuid())
+  reportHash      String
+  reportType      ReportType
+  generatedBy     String
+  generatedByUser User        @relation(fields: [generatedBy], references: [id])
+  transactionId   String?
+  transaction     Transaction? @relation(fields: [transactionId], references: [id])
+  
+  metadata        Json?
+  createdAt       DateTime    @default(now())
+
+  @@map("reports")
+}
