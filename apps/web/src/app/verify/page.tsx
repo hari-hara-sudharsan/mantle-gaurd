@@ -53,6 +53,11 @@ export default function VerifyPage() {
                 return
             }
 
+            if (!result.data) {
+                setError("Verification response was empty")
+                return
+            }
+
             setVerificationResult(result.data)
         } catch (err) {
             setError(err instanceof Error ? err.message : "Verification failed")

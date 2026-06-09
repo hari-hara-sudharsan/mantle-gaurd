@@ -93,7 +93,7 @@ export function GasChartsSection({ data }: GasChartsSectionProps) {
                                         padding: "12px"
                                     }}
                                     labelStyle={{ color: "#fff", marginBottom: "8px" }}
-                                    formatter={(value: number) => [value.toLocaleString(), ""]}
+                                    formatter={(value) => [Number(value || 0).toLocaleString(), ""]}
                                 />
                                 <Legend
                                     wrapperStyle={{ paddingTop: "20px" }}
@@ -148,7 +148,7 @@ export function GasChartsSection({ data }: GasChartsSectionProps) {
                                     outerRadius={120}
                                     paddingAngle={5}
                                     dataKey="value"
-                                    label={(entry) => `${entry.percentage}%`}
+                                    label={(entry) => `${entry.payload?.percentage ?? 0}%`}
                                     labelLine={false}
                                 >
                                     <Cell fill="url(#executionGradient)" />
@@ -161,7 +161,7 @@ export function GasChartsSection({ data }: GasChartsSectionProps) {
                                         borderRadius: "12px",
                                         padding: "12px"
                                     }}
-                                    formatter={(value: number) => [value.toFixed(4), "Cost"]}
+                                    formatter={(value) => [Number(value || 0).toFixed(4), "Cost"]}
                                 />
                                 <Legend
                                     verticalAlign="bottom"

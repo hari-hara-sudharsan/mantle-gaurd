@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { AppShell } from "@/components/layout/app-shell";
 import { ThemeProvider } from "@/providers/theme-provider";
-
-const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
+import { QueryProvider } from "@/providers/query-provider";
+import { AnalysisProvider } from "@/providers/analysis-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans dark", geist.variable)} suppressHydrationWarning>
+    <html lang="en" className={cn("font-sans dark", geistSans.variable)} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -40,9 +40,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AppShell>
-            {children}
-          </AppShell>
+          <QueryProvider>
+            <AnalysisProvider>
+              <AppShell>
+                {children}
+              </AppShell>
+              <Toaster />
+            </AnalysisProvider>
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>

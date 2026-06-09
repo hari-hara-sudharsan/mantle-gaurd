@@ -67,6 +67,7 @@ export interface GasHotspot {
 export interface FunctionAnalysis {
     name: string
     gas: number
+    l2Fee: number
     daFee: number
     total: number
     severity: "low" | "medium" | "high"
@@ -496,20 +497,11 @@ export function GasProfilerExperience() {
                                 data-submit-button
                                 size="lg"
                                 onClick={handleSubmitContract}
-                                disabled={analysisState === "uploading"}
+                                disabled={false}
                                 className="gap-3 text-lg py-6 px-12 rounded-2xl bg-green-600 hover:bg-green-500 text-white font-semibold transition-all duration-300 shadow-lg shadow-green-500/30 hover:shadow-green-500/50"
                             >
-                                {analysisState === "uploading" ? (
-                                    <>
-                                        <Loader2 className="w-5 h-5 animate-spin text-white" />
-                                        <span className="text-white">Submitting to Backend...</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Upload className="w-5 h-5 text-white" />
-                                        <span className="text-white font-bold">Submit Contract</span>
-                                    </>
-                                )}
+                                <Upload className="w-5 h-5 text-white" />
+                                <span className="text-white font-bold">Submit Contract</span>
                             </Button>
                         </div>
                     </motion.div>
@@ -638,6 +630,10 @@ function transformGasApiResponse(apiData: {
         name: string
         gasUsed: number
         complexity: string
+        l2Fee?: number
+        daFee?: number
+        totalFee?: number
+        suggestions?: string[]
     }>
     hotspots: Array<{
         function: string
@@ -683,16 +679,19 @@ function transformGasApiResponse(apiData: {
             optimizedMNT: apiData.mntCost * (1 - savingsPercent / 100)
         },
         functions: apiData.functions.map((f, i) => {
-            const daFee = apiData.daFee / apiData.functions.length
+            const daFee = f.daFee ?? apiData.daFee / apiData.functions.length
+            const l2Fee = f.l2Fee ?? 0
+            const suggestions = f.suggestions || []
             return {
                 name: f.name,
                 gas: f.gasUsed,
+                l2Fee,
                 daFee: daFee,
-                total: f.gasUsed,
+                total: f.totalFee ?? f.gasUsed,
                 severity: f.complexity === "high" ? "high" : f.complexity === "medium" ? "medium" : "low",
-                optimization: f.complexity === "low" ? "Already optimized" : "Can be optimized",
+                optimization: suggestions[0] || (f.complexity === "low" ? "Already optimized" : "Can be optimized"),
                 estimatedSavings: f.complexity === "high" ? "20%" : f.complexity === "medium" ? "10%" : "0%",
-                explanation: `Function complexity: ${f.complexity}`
+                explanation: `Function complexity: ${f.complexity}. L2 fee: ${l2Fee}, DA fee: ${daFee}.`
             }
         }),
         optimizations: apiData.recommendations.map((r, i) => ({
@@ -758,6 +757,7 @@ function reconstructGasAnalysisData(gasData: {
             {
                 name: "main()",
                 gas: Math.floor(gasData.totalGas * 0.4),
+                l2Fee: 0,
                 daFee: gasData.daFee * 0.4,
                 total: Math.floor(gasData.totalGas * 0.4),
                 severity: "high" as const,
@@ -793,6 +793,10 @@ function transformGasApiResponse_old(apiData: {
         name: string
         gasUsed: number
         complexity: string
+        l2Fee?: number
+        daFee?: number
+        totalFee?: number
+        suggestions?: string[]
     }>
     hotspots: Array<{
         function: string
@@ -838,16 +842,19 @@ function transformGasApiResponse_old(apiData: {
             optimizedMNT: apiData.mntCost * (1 - savingsPercent / 100)
         },
         functions: apiData.functions.map((f, i) => {
-            const daFee = apiData.daFee / apiData.functions.length
+            const daFee = f.daFee ?? apiData.daFee / apiData.functions.length
+            const l2Fee = f.l2Fee ?? 0
+            const suggestions = f.suggestions || []
             return {
                 name: f.name,
                 gas: f.gasUsed,
+                l2Fee,
                 daFee: daFee,
-                total: f.gasUsed,
+                total: f.totalFee ?? f.gasUsed,
                 severity: f.complexity === "high" ? "high" : f.complexity === "medium" ? "medium" : "low",
-                optimization: f.complexity === "low" ? "Already optimized" : "Can be optimized",
+                optimization: suggestions[0] || (f.complexity === "low" ? "Already optimized" : "Can be optimized"),
                 estimatedSavings: f.complexity === "high" ? "20%" : f.complexity === "medium" ? "10%" : "0%",
-                explanation: `Function complexity: ${f.complexity}`
+                explanation: `Function complexity: ${f.complexity}. L2 fee: ${l2Fee}, DA fee: ${daFee}.`
             }
         }),
         optimizations: apiData.recommendations.map((r, i) => ({
@@ -918,6 +925,7 @@ function getMockAnalysisData(): GasAnalysisData {
             {
                 name: "deposit()",
                 gas: 45234,
+                l2Fee: 0.0001,
                 daFee: 0.0003,
                 total: 45234,
                 severity: "low",
@@ -928,6 +936,7 @@ function getMockAnalysisData(): GasAnalysisData {
             {
                 name: "withdraw(uint256)",
                 gas: 89421,
+                l2Fee: 0.0002,
                 daFee: 0.0008,
                 total: 89421,
                 severity: "high",
@@ -938,6 +947,7 @@ function getMockAnalysisData(): GasAnalysisData {
             {
                 name: "updatePrice(uint256[])",
                 gas: 124908,
+                l2Fee: 0.0003,
                 daFee: 0.0011,
                 total: 124908,
                 severity: "high",
@@ -948,6 +958,7 @@ function getMockAnalysisData(): GasAnalysisData {
             {
                 name: "transfer(address,uint256)",
                 gas: 25000,
+                l2Fee: 0.0001,
                 daFee: 0.0002,
                 total: 25000,
                 severity: "low",

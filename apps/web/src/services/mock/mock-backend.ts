@@ -4,7 +4,7 @@
  * Replace with real API calls when backend is ready
  */
 
-import { ApiResponse } from "@/lib/api-client"
+import { ApiError, ApiResponse } from "@/lib/api-client"
 import { GasAnalysisResult } from "../gas"
 import { AuditResult } from "../audit"
 import { CopilotResponse } from "../copilot"
@@ -66,6 +66,7 @@ export const mockBackend = {
             success: true,
             data: {
                 analysisId,
+                contractName: "VulnerableVault",
                 totalGas: 245678,
                 daFee: 1200,
                 mntCost: 0.045,
@@ -299,7 +300,7 @@ export const mockBackend = {
     },
 
     // Get Analysis Context
-    async getContext(analysisId: string): Promise<ApiResponse<AnalysisContext>> {
+    async getContext(analysisId: string): Promise<ApiResponse<AnalysisContext> | ApiError> {
         await delay(500)
 
         const context = mockStore.get(analysisId)

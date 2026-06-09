@@ -55,17 +55,17 @@ export default function SettingsPage() {
                     <div className="space-y-5">
                         <div className="grid gap-2">
                             <Label htmlFor="username">Username</Label>
-                            <Input id="username" {...register("username", { valueAsString: true })} />
+                            <Input id="username" {...register("username")} />
                             {errors.username && <p className="text-sm text-destructive">{errors.username.message}</p>}
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="email">Email address</Label>
-                            <Input id="email" type="email" {...register("email", { valueAsString: true })} />
+                            <Input id="email" type="email" {...register("email")} />
                             {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="walletAddress">Connected wallet</Label>
-                            <Input id="walletAddress" {...register("walletAddress", { valueAsString: true })} />
+                            <Input id="walletAddress" {...register("walletAddress")} />
                             {errors.walletAddress && <p className="text-sm text-destructive">{errors.walletAddress.message}</p>}
                         </div>
                     </div>

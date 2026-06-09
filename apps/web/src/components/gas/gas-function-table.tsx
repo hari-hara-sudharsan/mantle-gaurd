@@ -85,6 +85,9 @@ export function GasFunctionTable({ functions, onFunctionClick }: GasFunctionTabl
                                 </button>
                             </th>
                             <th className="text-right py-4 px-4 text-sm font-medium text-muted-foreground">
+                                L2 Fee
+                            </th>
+                            <th className="text-right py-4 px-4 text-sm font-medium text-muted-foreground">
                                 DA Fee
                             </th>
                             <th className="text-right py-4 px-4 text-sm font-medium text-muted-foreground">
@@ -115,12 +118,12 @@ export function GasFunctionTable({ functions, onFunctionClick }: GasFunctionTabl
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 0.3, delay: index * 0.05 }}
                             >
-                                <td colSpan={7} className="p-0">
+                                <td colSpan={8} className="p-0">
                                     <div className={cn(
                                         "border-b border-white/5 transition-colors",
                                         expandedRow === index && "bg-white/5"
                                     )}>
-                                        <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto_auto] items-center gap-4 py-4 px-4">
+                                        <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto_auto_auto] items-center gap-4 py-4 px-4">
                                             <button
                                                 onClick={() => onFunctionClick?.(func)}
                                                 className={cn(
@@ -140,7 +143,11 @@ export function GasFunctionTable({ functions, onFunctionClick }: GasFunctionTabl
                                             </div>
 
                                             <div className="text-right tabular-nums text-sm text-muted-foreground">
-                                                {func.daFee.toFixed(4)}
+                                                {func.l2Fee.toLocaleString()}
+                                            </div>
+
+                                            <div className="text-right tabular-nums text-sm text-muted-foreground">
+                                                {func.daFee.toLocaleString()}
                                             </div>
 
                                             <div className="text-right tabular-nums text-sm font-semibold text-white">
@@ -272,14 +279,18 @@ export function GasFunctionTable({ functions, onFunctionClick }: GasFunctionTabl
                             </Badge>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-4 text-sm">
+                        <div className="grid grid-cols-4 gap-4 text-sm">
                             <div>
                                 <p className="text-xs text-muted-foreground mb-1">Gas</p>
                                 <p className="font-semibold text-white tabular-nums">{func.gas.toLocaleString()}</p>
                             </div>
                             <div>
+                                <p className="text-xs text-muted-foreground mb-1">L2 Fee</p>
+                                <p className="font-semibold text-white tabular-nums">{func.l2Fee.toLocaleString()}</p>
+                            </div>
+                            <div>
                                 <p className="text-xs text-muted-foreground mb-1">DA Fee</p>
-                                <p className="font-semibold text-white tabular-nums">{func.daFee.toFixed(4)}</p>
+                                <p className="font-semibold text-white tabular-nums">{func.daFee.toLocaleString()}</p>
                             </div>
                             <div>
                                 <p className="text-xs text-muted-foreground mb-1">Total</p>

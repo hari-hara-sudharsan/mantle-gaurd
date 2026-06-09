@@ -489,20 +489,11 @@ export function AuditExperience() {
                                 data-submit-button
                                 size="lg"
                                 onClick={handleSubmitContract}
-                                disabled={auditState === "uploading"}
+                                disabled={false}
                                 className="gap-3 text-lg py-6 px-12 rounded-2xl bg-green-600 hover:bg-green-500 text-white font-semibold transition-all duration-300 shadow-lg shadow-green-500/30 hover:shadow-green-500/50"
                             >
-                                {auditState === "uploading" ? (
-                                    <>
-                                        <Loader2 className="w-5 h-5 animate-spin text-white" />
-                                        <span className="text-white">Submitting to Backend...</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Upload className="w-5 h-5 text-white" />
-                                        <span className="text-white font-bold">Submit Contract</span>
-                                    </>
-                                )}
+                                <Upload className="w-5 h-5 text-white" />
+                                <span className="text-white font-bold">Submit Contract</span>
                             </Button>
                         </div>
                     </motion.div>

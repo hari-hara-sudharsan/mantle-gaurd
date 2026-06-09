@@ -12,6 +12,12 @@ import type { AuditState } from "./audit-experience"
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false })
 
+declare global {
+    interface Window {
+        monaco?: any
+    }
+}
+
 interface AuditEditorSectionProps {
     code: string
     onChange: (code: string, fileName?: string, fileSize?: number) => void
@@ -156,9 +162,10 @@ export function AuditEditorSection({
                             }}
                             onMount={(editor) => {
                                 // Highlight vulnerable lines
-                                if (highlightedLines.length > 0) {
+                                const monaco = window.monaco
+                                if (highlightedLines.length > 0 && monaco) {
                                     const decorations = highlightedLines.map(lineNumber => ({
-                                        range: new window.monaco.Range(lineNumber, 1, lineNumber, 1),
+                                        range: new monaco.Range(lineNumber, 1, lineNumber, 1),
                                         options: {
                                             isWholeLine: true,
                                             className: 'vulnerable-line',

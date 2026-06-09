@@ -30,21 +30,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
                 staleTime: 60 * 1000,
                 retry: 1,
                 refetchOnWindowFocus: false,
-                // Suppress WalletConnect errors
-                onError: (error: any) => {
-                    if (error?.message?.includes('subscribe') ||
-                        error?.message?.includes('Connection interrupted')) {
-                        return; // Silent fail
-                    }
-                },
-            },
-            mutations: {
-                onError: (error: any) => {
-                    if (error?.message?.includes('subscribe') ||
-                        error?.message?.includes('Connection interrupted')) {
-                        return; // Silent fail
-                    }
-                },
             },
         },
     }))

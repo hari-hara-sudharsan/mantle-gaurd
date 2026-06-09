@@ -3,12 +3,14 @@
 import { useState, useRef } from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
-import { Sparkles, Paperclip, Image as ImageIcon, Send, X } from "lucide-react"
+import { Sparkles, Paperclip, Image as ImageIcon, Send, X, Loader2 } from "lucide-react"
+import { copilotService } from "@/services"
 
 interface Message {
     role: "user" | "assistant"
     content: string
     files?: AttachedFile[]
+    sources?: string[]
 }
 
 interface AttachedFile {
@@ -22,10 +24,11 @@ export default function CopilotPage() {
     const [prompt, setPrompt] = useState("")
     const [messages, setMessages] = useState<Message[]>([])
     const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([])
+    const [isSending, setIsSending] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
     const imageInputRef = useRef<HTMLInputElement>(null)
 
-    const canSend = prompt.trim().length > 0 || attachedFiles.length > 0
+    const canSend = !isSending && (prompt.trim().length > 0 || attachedFiles.length > 0)
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>, type: "file" | "image") => {
         const files = event.target.files
@@ -77,32 +80,62 @@ export default function CopilotPage() {
         toast.info("File removed")
     }
 
-    const handleSend = () => {
+    const handleSend = async () => {
         if (!canSend) {
             toast.error("Please enter a query or attach a file first.")
             return
         }
 
         const messageContent = prompt.trim() || "Attached files for analysis"
+        const filesForMessage = attachedFiles.length > 0 ? [...attachedFiles] : undefined
 
         setMessages((prev) => [
             ...prev,
             {
                 role: "user",
                 content: messageContent,
-                files: attachedFiles.length > 0 ? [...attachedFiles] : undefined
-            },
-            {
-                role: "assistant",
-                content: attachedFiles.length > 0
-                    ? `I've received ${attachedFiles.length} file(s). Analyzing the content and your prompt against Mantle protocol heuristics. I'll provide a detailed analysis in just a moment.`
-                    : "Analyzing your prompt against Mantle protocol heuristics. I'll provide a detailed gas and security summary in just a moment."
+                files: filesForMessage
             }
         ])
 
         setPrompt("")
         setAttachedFiles([])
-        toast.success("Query sent to MantleGuard AI")
+        setIsSending(true)
+
+        try {
+            const result = await copilotService.chat({ question: messageContent })
+
+            if (!result.success) {
+                throw new Error(result.error || "Copilot request failed")
+            }
+
+            if (!result.data) {
+                throw new Error("Copilot response was empty")
+            }
+
+            const responseData = result.data
+
+            setMessages((prev) => [
+                ...prev,
+                {
+                    role: "assistant",
+                    content: responseData.answer,
+                    sources: responseData.sources,
+                }
+            ])
+        } catch (error) {
+            const message = error instanceof Error ? error.message : "Copilot request failed"
+            toast.error(message)
+            setMessages((prev) => [
+                ...prev,
+                {
+                    role: "assistant",
+                    content: "I could not reach the Mantle Copilot backend. Check that the FastAPI server is running and NEXT_PUBLIC_API_URL is set correctly.",
+                }
+            ])
+        } finally {
+            setIsSending(false)
+        }
     }
 
     const formatFileSize = (bytes: number) => {
@@ -232,7 +265,7 @@ export default function CopilotPage() {
                                     disabled={!canSend}
                                     className="p-3 bg-black hover:bg-gray-900 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    <Send className="w-5 h-5" />
+                                    {isSending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
                                 </button>
                             </div>
                         </div>
@@ -279,9 +312,30 @@ export default function CopilotPage() {
                                             ))}
                                         </div>
                                     )}
+                                    {message.sources && message.sources.length > 0 && (
+                                        <div className="mt-3 flex flex-wrap gap-2">
+                                            {message.sources.map((source) => (
+                                                <span
+                                                    key={source}
+                                                    className="rounded-full border border-white/15 bg-white/10 px-2 py-1 text-xs text-white/70"
+                                                >
+                                                    {source}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))}
+
+                        {isSending && (
+                            <div className="flex justify-start">
+                                <div className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/10 p-4 text-sm text-white">
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    Asking Mantle Copilot...
+                                </div>
+                            </div>
+                        )}
 
                         {/* Input Area in Chat Mode */}
                         <div className="w-full bg-white rounded-2xl shadow-xl p-6 mt-8">
@@ -380,7 +434,7 @@ export default function CopilotPage() {
                                     disabled={!canSend}
                                     className="p-3 bg-black hover:bg-gray-900 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    <Send className="w-5 h-5" />
+                                    {isSending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
                                 </button>
                             </div>
                         </div>

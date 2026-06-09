@@ -1,5 +1,7 @@
-import { apiClient, ApiResponse, ApiError } from "@/lib/api-client"
+import { ApiResponse, ApiError } from "@/lib/api-client"
 import { mockBackend, MOCK_MODE } from "./mock/mock-backend"
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
 // Copilot Types
 export interface CopilotMessage {
@@ -16,6 +18,7 @@ export interface CopilotRequest {
 
 export interface CopilotResponse {
     answer: string
+    sources?: string[]
     context: {
         contractReferences: string[]
         findingReferences: string[]
@@ -36,9 +39,51 @@ export interface StreamingCopilotRequest {
 export const copilotService = {
     async chat(request: CopilotRequest): Promise<ApiResponse<CopilotResponse> | ApiError> {
         if (MOCK_MODE) {
-            return mockBackend.chat(request.question, request.analysisId || '')
+            const response = await mockBackend.chat(request.question, request.analysisId || '')
+            if (response.success && response.data) {
+                return {
+                    ...response,
+                    data: {
+                        ...response.data,
+                        sources: [],
+                    },
+                }
+            }
+            return response
         }
-        return apiClient.post<CopilotResponse>("/api/copilot/chat", request)
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/chat`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question: request.question }),
+            })
+            const data = await response.json()
+
+            if (!response.ok || data.success === false) {
+                throw new Error(data.error || data.detail || data.message || response.statusText)
+            }
+
+            return {
+                success: true,
+                data: {
+                    answer: data.answer,
+                    sources: data.sources || [],
+                    context: {
+                        contractReferences: [],
+                        findingReferences: [],
+                        gasReferences: data.sources || [],
+                    },
+                    confidence: 90,
+                },
+            }
+        } catch (error) {
+            return {
+                success: false,
+                error: "Copilot request failed",
+                details: error instanceof Error ? error.message : "Unknown error",
+            }
+        }
     },
 
     async chatStream(request: StreamingCopilotRequest): Promise<void> {
@@ -63,8 +108,7 @@ export const copilotService = {
             return
         }
 
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
-        const url = `${API_BASE_URL}/api/copilot/chat/stream`
+        const url = `${API_BASE_URL}/chat`
 
         try {
             const response = await fetch(url, {
@@ -74,7 +118,6 @@ export const copilotService = {
                 },
                 body: JSON.stringify({
                     question: request.question,
-                    analysisId: request.analysisId,
                 }),
             })
 
@@ -82,23 +125,9 @@ export const copilotService = {
                 throw new Error("Stream request failed")
             }
 
-            const reader = response.body?.getReader()
-            const decoder = new TextDecoder()
-            let fullResponse = ""
-
-            if (!reader) {
-                throw new Error("No reader available")
-            }
-
-            while (true) {
-                const { done, value } = await reader.read()
-                if (done) break
-
-                const chunk = decoder.decode(value, { stream: true })
-                fullResponse += chunk
-                request.onChunk(chunk)
-            }
-
+            const data = await response.json()
+            const fullResponse = data.answer || ""
+            request.onChunk(fullResponse)
             request.onComplete(fullResponse)
         } catch (error) {
             request.onError(error instanceof Error ? error.message : "Unknown error")

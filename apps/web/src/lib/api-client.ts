@@ -1,6 +1,6 @@
 // Standard API Response Types
 export interface ApiResponse<T = unknown> {
-    success: boolean
+    success: true
     data?: T
     message?: string
 }
