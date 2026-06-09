@@ -1,0 +1,70 @@
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .glass {
+    @apply bg-[#111111]/70 backdrop-blur-md border border-white/5;
+  }
+
+  .shadow-neon {
+    box-shadow: 0 0 15px rgba(0, 255, 178, 0.2), 0 0 30px rgba(0, 194, 255, 0.1);
+  }
+}
+
+@layer base {
+  .theme {
+    --font-heading: var(--font-sans);
+    --font-sans: var(--font-sans);
+  }
+
+  :root,
+  .dark {
+    /* YOUR COLOR SYSTEM */
+    --background: #0a0a0a;
+    --foreground: #f8fafc;
+
+    --card: #111111;
+    --card-foreground: #f8fafc;
+
+    --popover: #111111;
+    --popover-foreground: #f8fafc;
+
+    --primary: #00FFB2;
+    --primary-foreground: #000000;
+
+    --secondary: #1f2937;
+    --secondary-foreground: #f8fafc;
+
+    --muted: #1f2937;
+    --muted-foreground: #94a3b8;
+
+    --accent: #00C2FF;
+    --accent-foreground: #ffffff;
+
+    --destructive: #FF5D5D;
+    --destructive-foreground: #ffffff;
+
+    --danger: #FF5D5D;
+
+    --border: #1f2937;
+    --input: #1f2937;
+    --ring: #00C2FF;
+
+    --radius: 16px;
+  }
+
+  * {
+    @apply border-border outline-ring/50 transition-colors duration-300;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-primary selection:text-black;
+  }
+}
