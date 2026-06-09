@@ -1,0 +1,420 @@
+"use client"
+
+import { useState } from "react"
+import { motion } from "framer-motion"
+import { SectionCard } from "@/components/shared/section-card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import {
+    Download,
+    FileText,
+    Share,
+    Copy,
+    Check,
+    ExternalLink,
+    Mail,
+    Code2,
+    Bird,
+    MessageCircle,
+    Zap,
+    TerminalSquare
+} from "lucide-react"
+import { AuditData } from "./audit-experience"
+import { generateAuditPDF } from "@/lib/pdf-generator"
+import {
+    shareToGitHub,
+    shareToTwitter,
+    shareViaEmail,
+    shareToForum,
+    generateGitHubAction,
+    generateAPIWebhook,
+    generateCLICommands
+} from "@/lib/share-utils"
+import { toast } from "sonner"
+
+interface AuditExportCenterProps {
+    data: AuditData
+    contractCode: string
+}
+
+export function AuditExportCenter({ data, contractCode }: AuditExportCenterProps) {
+    const [exportStatus, setExportStatus] = useState<string | null>(null)
+    const [copiedLink, setCopiedLink] = useState(false)
+
+    const criticalIssues = data.issues.filter(i => i.severity === "critical").length
+    const highIssues = data.issues.filter(i => i.severity === "high").length
+    const totalIssues = data.issues.length
+
+    const handleExportPDF = async () => {
+        setExportStatus("Generating PDF...")
+        try {
+            generateAuditPDF({
+                securityScore: data.securityScore,
+                scoreBreakdown: data.scoreBreakdown,
+                issues: data.issues.map(issue => ({
+                    severity: issue.severity,
+                    title: issue.title,
+                    description: issue.description,
+                    impact: issue.impact,
+                    suggestedFix: issue.suggestedFix,
+                    location: issue.location
+                })),
+                mantleInsights: data.mantleInsights
+            })
+            setExportStatus("PDF exported successfully!")
+            toast.success("PDF report generated successfully!")
+        } catch (error) {
+            setExportStatus("PDF export failed")
+            toast.error("Failed to generate PDF report")
+        }
+        setTimeout(() => setExportStatus(null), 3000)
+    }
+
+    const handleExportJSON = async () => {
+        const exportData = {
+            timestamp: new Date().toISOString(),
+            contract: {
+                code: contractCode,
+                analysisDate: new Date().toISOString()
+            },
+            security: {
+                score: data.securityScore,
+                breakdown: data.scoreBreakdown,
+                issues: data.issues,
+                riskHeatmap: data.riskHeatmap
+            },
+            mantle: {
+                insights: data.mantleInsights,
+                compatibilityScore: data.scoreBreakdown.mantleCompatibility
+            },
+            metadata: {
+                version: "1.0.0",
+                generator: "MantleGuard AI Security Audit"
+            }
+        }
+
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `mantle-audit-${Date.now()}.json`
+        a.click()
+        URL.revokeObjectURL(url)
+
+        setExportStatus("JSON exported successfully!")
+        setTimeout(() => setExportStatus(null), 3000)
+    }
+
+    const handleCopyReport = async () => {
+        const report = generateTextReport()
+        await navigator.clipboard.writeText(report)
+        setExportStatus("Report copied to clipboard!")
+        setTimeout(() => setExportStatus(null), 3000)
+    }
+
+    const handleShareLink = async () => {
+        const shareUrl = `${window.location.origin}/audit?share=${Date.now()}`
+        await navigator.clipboard.writeText(shareUrl)
+        setCopiedLink(true)
+        setTimeout(() => setCopiedLink(false), 2000)
+    }
+
+    const generateTextReport = () => {
+        return `
+# MantleGuard Security Audit Report
+Generated: ${new Date().toLocaleString()}
+
+## Security Overview
+- Overall Score: ${data.securityScore}/100
+- Critical Issues: ${criticalIssues}
+- High Issues: ${highIssues}
+- Total Issues: ${totalIssues}
+
+## Score Breakdown
+- Access Control: ${data.scoreBreakdown.accessControl}/100
+- Reentrancy: ${data.scoreBreakdown.reentrancy}/100
+- Storage Safety: ${data.scoreBreakdown.storageSafety}/100
+- Input Validation: ${data.scoreBreakdown.inputValidation}/100
+- Mantle Compatibility: ${data.scoreBreakdown.mantleCompatibility}/100
+
+## Critical Issues
+${data.issues
+                .filter(i => i.severity === "critical")
+                .map(issue => `
+### ${issue.title}
+- Location: ${issue.location}
+- Impact: ${issue.impact}
+- Fix: ${issue.suggestedFix}
+`).join('')}
+
+## Mantle L2 Insights
+${data.mantleInsights.map(insight => `- ${insight}`).join('\n')}
+
+---
+Report generated by MantleGuard AI Security Suite
+        `.trim()
+    }
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0 }}
+        >
+            <SectionCard
+                title="Audit Export Center"
+                description="Download, share, and distribute security findings"
+                icon={<Download className="w-6 h-6 text-primary" />}
+            >
+                <div className="space-y-6">
+                    {/* Export Status */}
+                    {exportStatus && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center gap-2"
+                        >
+                            <Check className="w-4 h-4 text-green-400" />
+                            <span className="text-green-400 text-sm font-medium">{exportStatus}</span>
+                        </motion.div>
+                    )}
+
+                    {/* Quick Stats */}
+                    <div className="grid grid-cols-3 gap-4">
+                        <div className="text-center p-4 bg-white/5 rounded-lg border border-white/10">
+                            <div className="text-2xl font-bold text-white mb-1">{data.securityScore}</div>
+                            <div className="text-xs text-muted-foreground">Security Score</div>
+                        </div>
+                        <div className="text-center p-4 bg-white/5 rounded-lg border border-white/10">
+                            <div className="text-2xl font-bold text-red-400 mb-1">{criticalIssues + highIssues}</div>
+                            <div className="text-xs text-muted-foreground">High+ Issues</div>
+                        </div>
+                        <div className="text-center p-4 bg-white/5 rounded-lg border border-white/10">
+                            <div className="text-2xl font-bold text-white mb-1">{totalIssues}</div>
+                            <div className="text-xs text-muted-foreground">Total Issues</div>
+                        </div>
+                    </div>
+
+                    {/* Export Actions */}
+                    <div className="space-y-4">
+                        <h4 className="font-semibold text-white flex items-center gap-2">
+                            <Download className="w-5 h-5 text-primary" />
+                            Export Options
+                        </h4>
+
+                        <div className="grid sm:grid-cols-2 gap-3">
+                            <Button
+                                onClick={handleExportPDF}
+                                className="flex items-center gap-2 h-auto p-4 bg-red-600 hover:bg-red-700"
+                            >
+                                <FileText className="w-5 h-5" />
+                                <div className="text-left">
+                                    <div className="font-semibold">Executive Report (PDF)</div>
+                                    <div className="text-xs opacity-80">Professional audit summary</div>
+                                </div>
+                            </Button>
+
+                            <Button
+                                onClick={handleExportJSON}
+                                variant="outline"
+                                className="flex items-center gap-2 h-auto p-4"
+                            >
+                                <Download className="w-5 h-5" />
+                                <div className="text-left">
+                                    <div className="font-semibold">Raw Data (JSON)</div>
+                                    <div className="text-xs opacity-80">Complete findings dataset</div>
+                                </div>
+                            </Button>
+
+                            <Button
+                                onClick={handleCopyReport}
+                                variant="outline"
+                                className="flex items-center gap-2 h-auto p-4"
+                            >
+                                <Copy className="w-5 h-5" />
+                                <div className="text-left">
+                                    <div className="font-semibold">Copy Report</div>
+                                    <div className="text-xs opacity-80">Text format for sharing</div>
+                                </div>
+                            </Button>
+
+                            <Button
+                                onClick={handleShareLink}
+                                variant="outline"
+                                className="flex items-center gap-2 h-auto p-4"
+                            >
+                                <Share className="w-5 h-5" />
+                                <div className="text-left">
+                                    <div className="font-semibold">Share Link</div>
+                                    <div className="text-xs opacity-80">
+                                        {copiedLink ? "Link copied!" : "Generate shareable URL"}
+                                    </div>
+                                </div>
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Share Options */}
+                    <div className="space-y-4">
+                        <h4 className="font-semibold text-white flex items-center gap-2">
+                            <Share className="w-5 h-5 text-blue-400" />
+                            Share Results
+                        </h4>
+
+                        <div className="flex flex-wrap gap-3">
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex items-center gap-2"
+                                onClick={() => shareToGitHub({
+                                    title: `Security Audit Report - Score: ${data.securityScore}/100`,
+                                    description: `Found ${totalIssues} security issues (${criticalIssues} critical, ${highIssues} high)`,
+                                    data: {
+                                        securityScore: data.securityScore,
+                                        issuesCount: totalIssues,
+                                        issues: data.issues,
+                                        criticalCount: criticalIssues,
+                                        highCount: highIssues
+                                    }
+                                })}
+                            >
+                                <Code2 className="w-4 h-4" />
+                                GitHub Issue
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex items-center gap-2"
+                                onClick={() => shareToTwitter({
+                                    title: "🛡️ Smart Contract Security Audit Complete!",
+                                    description: `Analyzed with MantleGuard AI`,
+                                    url: window.location.href,
+                                    data: {
+                                        securityScore: data.securityScore,
+                                        issuesCount: totalIssues
+                                    }
+                                })}
+                            >
+                                <Bird className="w-4 h-4" />
+                                Tweet Results
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex items-center gap-2"
+                                onClick={() => shareViaEmail({
+                                    title: "MantleGuard Security Audit Report",
+                                    description: "Please find the detailed security audit report below.",
+                                    data: {
+                                        securityScore: data.securityScore,
+                                        issuesCount: totalIssues,
+                                        issues: data.issues
+                                    }
+                                })}
+                            >
+                                <Mail className="w-4 h-4" />
+                                Email Report
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex items-center gap-2"
+                                onClick={() => shareToForum({
+                                    title: "Smart Contract Security Audit Results",
+                                    description: "Analysis completed using MantleGuard AI Security Suite",
+                                    data: {
+                                        securityScore: data.securityScore,
+                                        issuesCount: totalIssues,
+                                        issues: data.issues,
+                                        criticalCount: criticalIssues,
+                                        highCount: highIssues
+                                    }
+                                })}
+                            >
+                                <MessageCircle className="w-4 h-4" />
+                                Forum Post
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Report Preview */}
+                    <div className="p-4 bg-black/50 rounded-lg border border-white/10">
+                        <h4 className="font-semibold text-white mb-3">Report Preview</h4>
+                        <div className="space-y-2 text-sm">
+                            <div className="flex items-center justify-between">
+                                <span className="text-muted-foreground">Audit Date:</span>
+                                <span className="text-white">{new Date().toLocaleDateString()}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-muted-foreground">Security Score:</span>
+                                <Badge className={`${data.securityScore >= 80 ? 'bg-green-600' : data.securityScore >= 60 ? 'bg-yellow-600' : 'bg-red-600'}`}>
+                                    {data.securityScore}/100
+                                </Badge>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-muted-foreground">Issues Found:</span>
+                                <span className="text-white">{totalIssues}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-muted-foreground">Mantle Compatibility:</span>
+                                <Badge variant="outline" className="text-blue-400 border-blue-400">
+                                    {data.scoreBreakdown.mantleCompatibility}%
+                                </Badge>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Integration Options */}
+                    <div className="p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg border border-blue-500/20">
+                        <h4 className="font-semibold text-white mb-3">CI/CD Integration</h4>
+                        <p className="text-sm text-muted-foreground mb-3">
+                            Integrate MantleGuard into your development workflow
+                        </p>
+                        <div className="flex gap-2">
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                    generateGitHubAction()
+                                    toast.success("GitHub Action workflow downloaded!")
+                                }}
+                            >
+                                <Code2 className="w-4 h-4 mr-2" />
+                                GitHub Action
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                    generateAPIWebhook()
+                                    toast.success("Webhook integration example downloaded!")
+                                }}
+                            >
+                                <Zap className="w-4 h-4 mr-2" />
+                                API Webhook
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                    generateCLICommands()
+                                    toast.success("CLI tools guide downloaded!")
+                                }}
+                            >
+                                <TerminalSquare className="w-4 h-4 mr-2" />
+                                CLI Tool
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="text-center pt-4 border-t border-white/10">
+                        <p className="text-xs text-muted-foreground">
+                            Reports include detailed vulnerability analysis and Mantle L2-specific insights
+                        </p>
+                    </div>
+                </div>
+            </SectionCard>
+        </motion.div>
+    )
+}

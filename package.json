@@ -1,0 +1,29 @@
+{
+    "name": "mantleguard",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "build": "turbo run build",
+        "dev": "turbo run dev",
+        "lint": "turbo run lint",
+        "type-check": "turbo run type-check",
+        "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+        "prepare": "husky && husky install"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^21.0.1",
+        "@commitlint/config-conventional": "^21.0.1",
+        "@typescript-eslint/eslint-plugin": "^8.60.0",
+        "@typescript-eslint/parser": "^8.60.0",
+        "eslint": "^8",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-react-hooks": "^7.1.1",
+        "eslint-plugin-tailwindcss": "^3.18.3",
+        "husky": "^8.0.0",
+        "lint-staged": "^17.0.5",
+        "prettier": "^3.8.3",
+        "turbo": "^1.13.3"
+    },
+    "packageManager": "pnpm@9.1.0"
+}
