@@ -8,278 +8,308 @@ MantleGuard is the first unified platform that combines gas optimization, securi
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 
-## ✨ Features
 
-### 🔥 Gas Profiler
-- **Real-time gas analysis** with function-level breakdown
-- **Mantle DA cost calculation** - optimize for L2 data availability
-- **AI-powered optimization suggestions** with estimated savings
-- **Before/after comparison** - see the impact of optimizations
-- **Interactive charts** - visualize gas consumption patterns
 
-### 🔒 Security Audit Engine
-- **Automated vulnerability detection** powered by AI
-- **Attack simulation** - animated visualization of exploit scenarios
-- **AI fix generator** - automatic secure code generation
-- **Executive summaries** - business-friendly impact analysis
-- **Mantle-specific security patterns** - L2 bridge safety, sequencer dependencies
+## The Problem
 
-### 🤖 AI Copilot
-- **Context-aware conversations** - knows your contract, findings, and history
-- **Streaming responses** - real-time AI interaction
-- **Smart explanations** - why vulnerabilities matter and how to fix them
-- **Code suggestions** - generate secure, optimized alternatives
+Most Solidity tools are designed for Ethereum and treat every EVM chain similarly. However, Mantle introduces its own execution model and fee behavior, making traditional tools insufficient.
 
-### ⛓️ On-Chain Verification
-- **Audit hash logging** - immutable proof on Mantle Network
-- **Report verification** - cryptographic integrity checks
-- **Transaction tracking** - transparent audit history
-- **Public verifiability** - anyone can verify report authenticity
+| Existing Tools        | Limitation                         |
+| --------------------- | ---------------------------------- |
+| Generic Gas Reporters | No Mantle-specific gas analysis    |
+| Generic Auditors      | Miss Mantle Layer-2 patterns       |
+| Documentation         | Static and difficult for beginners |
+| AI Assistants         | Lack Mantle ecosystem knowledge    |
 
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 18+
-- pnpm 9+
-- Git
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/mantleguard.git
-cd mantleguard
-
-# Install dependencies
-pnpm install
-
-# Setup environment variables
-cd apps/web
-cp .env.example .env.local
-
-# Update .env.local with your configuration
-# NEXT_PUBLIC_API_URL=http://localhost:8000
-# NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=your_project_id
-
-# Start development server
-pnpm run dev
-```
-
-Visit [http://localhost:3001](http://localhost:3001) 🎉
-
-## 🏗️ Architecture
-
-```
-┌─────────────────────────────────────────┐
-│         Frontend (Next.js 15)           │
-│  ┌─────────────────────────────────┐   │
-│  │   Pages & Components Layer      │   │
-│  ├─────────────────────────────────┤   │
-│  │   Service Layer (API Client)    │   │
-│  ├─────────────────────────────────┤   │
-│  │   State Management (Context)    │   │
-│  └─────────────────────────────────┘   │
-└──────────────┬──────────────────────────┘
-               │ HTTP/WebSocket
-┌──────────────▼──────────────────────────┐
-│       Backend API (FastAPI)             │
-│  ┌──────────┬──────────┬──────────┐    │
-│  │   Gas    │  Audit   │ Copilot  │    │
-│  │  Engine  │  Engine  │   RAG    │    │
-│  └──────────┴──────────┴──────────┘    │
-└──────────────┬──────────────────────────┘
-               │
-┌──────────────▼──────────────────────────┐
-│         Claude/OpenAI API               │
-└──────────────┬──────────────────────────┘
-               │
-┌──────────────▼──────────────────────────┐
-│         Mantle Network                  │
-│     (AuditLogger Smart Contract)        │
-└─────────────────────────────────────────┘
-```
-
-## 📁 Project Structure
-
-```
-mantleguard/
-├── apps/
-│   └── web/                    # Next.js frontend
-│       ├── src/
-│       │   ├── app/            # Pages & routes
-│       │   ├── components/     # React components
-│       │   ├── services/       # API service layer
-│       │   ├── providers/      # Context providers
-│       │   └── lib/            # Utilities
-│       └── public/             # Static assets
-├── packages/                   # Shared packages (future)
-└── docs/                       # Documentation
-```
-
-## 🔧 Technology Stack
-
-### Frontend
-- **Next.js 15** - React framework with Turbopack
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
-- **Framer Motion** - Animations
-- **Monaco Editor** - Code editing
-- **Recharts** - Data visualization
-- **Wagmi + RainbowKit** - Web3 wallet integration
-
-### Backend (API)
-- **FastAPI** - Python web framework
-- **Claude/OpenAI** - AI models
-- **Solidity Analyzer** - Static analysis
-- **Web3.py** - Blockchain interaction
-
-### Blockchain
-- **Mantle Network** - L2 deployment
-- **Solidity** - Smart contracts
-- **Ethers.js** - Web3 library
-
-## 🎯 Use Cases
-
-### For Smart Contract Developers
-- Optimize gas costs before deployment
-- Find and fix vulnerabilities early
-- Learn L2-specific best practices
-- Generate secure code alternatives
-
-### For Security Auditors
-- Automated first-pass analysis
-- AI-assisted vulnerability research
-- Generate audit reports
-- Verify report integrity on-chain
-
-### For Project Teams
-- Track contract health over time
-- Share verified audit reports
-- Monitor gas optimization progress
-- Educate team members on security
-
-## 🏆 Key Differentiators
-
-### vs. Slither/Mythril
-- ✅ Beautiful modern UI (not CLI)
-- ✅ AI explanations (not just findings)
-- ✅ Gas optimization included
-- ✅ Mantle L2 specific
-- ✅ Beginner-friendly learning mode
-
-### vs. Tenderly
-- ✅ Open source
-- ✅ L2-optimized analysis
-- ✅ Unified gas + security
-- ✅ AI copilot included
-- ✅ Free to use
-
-### vs. Other Hackathon Projects
-- ✅ Production-ready polish
-- ✅ Complete end-to-end workflow
-- ✅ Mantle ecosystem-specific
-- ✅ AI-native from ground up
-- ✅ Actually works!
-
-## 📊 Service Layer API
-
-All frontend-backend communication uses standardized service methods:
-
-```typescript
-// Gas Analysis
-const result = await gasService.analyze({
-  contract: code,
-  analysisId: "uuid"
-})
-
-// Security Audit
-const audit = await auditService.analyze({
-  contract: code,
-  analysisId: "uuid"
-})
-
-// AI Copilot (Streaming)
-await copilotService.chatStream({
-  question: "Why is this vulnerable?",
-  analysisId: "uuid",
-  onChunk: (chunk) => console.log(chunk),
-  onComplete: (full) => console.log(full)
-})
-
-// Report Generation
-const report = await reportService.generate({
-  analysisId: "uuid",
-  format: "json"
-})
-
-// On-Chain Logging
-const tx = await walletService.logAuditHash({
-  analysisId: "uuid",
-  reportHash: "0x...",
-  walletAddress: "0x..."
-})
-
-// Verification
-const verified = await walletService.verifyAudit({
-  reportHash: "0x..."
-})
-```
-
-## 🔐 Security Features
-
-- **SHA-256 hashing** for report integrity
-- **On-chain audit logging** via Mantle smart contract
-- **Cryptographic verification** of audit reports
-- **Transaction transparency** - all audits are publicly verifiable
-- **Wallet-based authentication** for audit ownership
-
-## 🎨 UI/UX Highlights
-
-- **Dark mode optimized** for extended coding sessions
-- **Smooth animations** with Framer Motion
-- **Responsive design** - works on mobile and desktop
-- **Monaco editor** - VSCode-like code editing
-- **Real-time streaming** - see AI responses as they generate
-- **Interactive visualizations** - charts, graphs, heatmaps
-- **Empty state polish** - helpful guidance when no data
-- **Loading states** - never leave users wondering
-
-## 📈 Performance
-
-- **Page load**: < 3s
-- **Chat response**: < 2s (streaming starts immediately)
-- **Page transitions**: < 500ms
-- **Build size**: Optimized with code splitting
-- **Lighthouse score**: 90+ across all metrics
-
-## 🤝 Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
-## 🔗 Links
-
-- **Website**: [mantleguard.xyz](https://mantleguard.xyz)
-- **Documentation**: [docs.mantleguard.xyz](https://docs.mantleguard.xyz)
-- **Twitter**: [@MantleGuard](https://twitter.com/mantleguard)
-- **Discord**: [Join our community](https://discord.gg/mantleguard)
-
-## 🙏 Acknowledgments
-
-Built with ❤️ for the Mantle Network community.
-
-Special thanks to:
-- Mantle Network team for the incredible L2 platform
-- OpenAI/Anthropic for AI capabilities
-- Next.js team for the amazing framework
-- The Web3 security community for inspiration
+**MantleGuard bridges this gap by providing a dedicated AI toolkit for Mantle developers.**
 
 ---
 
-**MantleGuard** - Secure, Optimize, Deploy with Confidence 🛡️✨
+# Key Features
+
+## ⛽ Mantle Gas Profiler
+
+* Function-level gas analysis
+* L2 Execution Fee estimation
+* Data Availability (DA) Fee estimation
+* Total transaction cost prediction
+* Live MNT token pricing support
+* AI-powered gas optimization suggestions
+* Color-coded optimization score
+
+---
+
+## 🔍 AI Audit Engine
+
+* Mantle-aware vulnerability detection
+* Reentrancy analysis
+* Access control validation
+* Unsafe external call detection
+* Integer overflow/underflow analysis
+* Bridge interaction checks
+* Severity classification
+
+  * Critical
+  * High
+  * Medium
+  * Low
+
+---
+
+## 🤖 AI Copilot
+
+An interactive assistant trained for Mantle development.
+
+Capabilities:
+
+* Explain Solidity code
+* Explain audit findings
+* Suggest fixes
+* Optimize gas usage
+* Answer Mantle ecosystem questions
+* Generate secure implementation examples
+
+---
+
+# Simple Architecture
+
+```
+                User
+                  │
+                  │
+          Next.js Frontend
+                  │
+      ┌───────────┼───────────┐
+      │           │           │
+ Gas Profiler  Audit Engine  AI Copilot
+      │           │           │
+      └───────────┼───────────┘
+                  │
+          Backend API Layer
+                  │
+        AI Services + Parser
+                  │
+             Mantle Network
+```
+
+---
+
+# Frontend
+
+Built using:
+
+* Next.js
+* React
+* TypeScript
+* Tailwind CSS
+* Shadcn/UI
+* Framer Motion
+* Monaco Editor
+* Wagmi Wallet Integration
+
+Frontend Modules:
+
+* Dashboard
+* Gas Profiler
+* Audit Report
+* AI Copilot
+* Contract Upload
+* Demo Contract Library
+
+---
+
+# Backend
+
+Backend Responsibilities:
+
+* Contract parsing
+* Gas estimation
+* AI audit pipeline
+* Report generation
+* Copilot retrieval
+* Mantle RPC communication
+
+Core Services:
+
+* FastAPI / Node API
+* AI Analysis Engine
+* Gas Calculation Engine
+* Audit Engine
+* Documentation Retrieval
+* Report Generator
+
+---
+
+# 🚀Tech Stack
+
+### 🖥️Frontend
+
+* ▲Next.js
+* ⚛️React
+* 🔷TypeScript
+* 🎨Tailwind CSS
+* 🧩Shadcn/UI
+* 📝Monaco Editor
+
+### ⚙️Backend
+
+* ⚡FastAPI / Node.js
+* 🐍Python
+* 🔗REST API
+
+### 🤖AI
+
+* 🧠Claude / GPT
+* 📚RAG Pipeline
+* 💡Prompt Engineering
+
+### ⛓️Blockchain
+
+* 🟢Mantle RPC
+* 🔷Solidity
+* ⚙️Ethers.js
+* 🔗Wagmi
+
+### 💾Storage
+
+* 🗄️Vector Database
+* ⚡Local Cache
+
+---
+
+# 🚀 Future Goals
+
+MantleGuard is designed to evolve beyond a hackathon project into the **AI Developer Security Platform for the Mantle ecosystem**. Our long-term vision is to provide developers with everything they need to build secure, optimized, and intelligent smart contracts.
+
+## 📅 Short-Term Goals
+
+* ✅ Release the **VS Code Extension** for real-time smart contract analysis.
+* ✅ Add **one-click gas optimization suggestions** with automated code fixes.
+* ✅ Support **live Mantle Mainnet and Testnet analysis**.
+* ✅ Generate **downloadable PDF and HTML audit reports**.
+* ✅ Improve AI Copilot with Mantle-specific documentation and examples.
+
+---
+
+## 🔥 Mid-Term Goals
+
+* 🛡️ Build an **AI Auto-Fix Engine** that not only detects vulnerabilities but also generates secure replacement code.
+* ⛽ Introduce **real-time gas simulation** before contract deployment.
+* 📊 Create a **Developer Analytics Dashboard** showing gas trends, optimization history, and security scores.
+* 🤝 Enable **team collaboration** with shared audit workspaces and comments.
+* 🔄 Integrate with **GitHub Actions and CI/CD pipelines** for automatic security checks on every commit.
+
+---
+
+## 🌐 Long-Term Goals
+
+* 🧠 Develop a **Mantle AI Security Agent** capable of continuously monitoring deployed contracts for new risks.
+* 🌉 Expand support to **multiple EVM chains** while maintaining Mantle-first optimizations.
+* 📚 Launch a **community-driven vulnerability knowledge base** powered by AI.
+* 🏆 Create a **Security & Gas Score** that becomes the standard benchmark for Mantle projects.
+* 🔗 Enable **on-chain audit verification**, allowing projects to publicly prove that their contracts were analyzed by MantleGuard.
+* 🤖 Introduce **AI-powered contract generation**, producing secure and gas-efficient Solidity templates from natural language prompts.
+
+---
 
 
-# mantle-gaurd
+
+# Quick Start
+
+## Clone
+
+```bash
+git clone <repository-url>
+
+cd mantleguard
+```
+
+---
+
+## Install Frontend
+
+```bash
+cd apps/web
+
+npm install
+
+npm run dev
+```
+
+---
+
+## Install Backend
+
+```bash
+cd backend
+
+pip install -r requirements.txt
+
+uvicorn main:app --reload
+```
+
+---
+
+## Required Dependencies
+
+Frontend
+
+* next
+* react
+* typescript
+* tailwindcss
+* shadcn/ui
+* framer-motion
+* lucide-react
+* monaco-editor
+* wagmi
+* ethers
+
+Backend
+
+* fastapi
+* uvicorn
+* pydantic
+* requests
+* python-dotenv
+
+---
+
+# Builder Insights
+
+> "Generic Solidity tools understand Ethereum. MantleGuard understands Mantle."
+
+> "Gas optimization should not require manual calculations. Developers deserve function-level insights with AI recommendations."
+
+> "Security tools should explain vulnerabilities, not just list them. MantleGuard combines detection with understandable guidance."
+
+---
+
+# Impact
+
+| Metric                         | Value |
+| ------------------------------ | ----- |
+| Mantle-specific Gas Analysis   | ✅     |
+| AI Smart Contract Audit        | ✅     |
+| AI Developer Copilot           | ✅     |
+| Function-Level Cost Estimation | ✅     |
+| Severity-Based Reports         | ✅     |
+| Beginner-Friendly UX           | ✅     |
+
+---
+
+# Vision
+
+MantleGuard aims to become the **default AI developer toolkit for the Mantle ecosystem**, empowering builders with intelligent gas analysis, automated security auditing, and conversational development assistance—all within a unified platform.
+
+---
+
+**Built for the Mantle Hackathon • AI DevTools Track**
+
+
+
+
+
+
+
+
