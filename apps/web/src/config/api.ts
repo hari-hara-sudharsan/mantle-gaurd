@@ -1,6 +1,6 @@
 // API Configuration
-// REPLACE THIS URL WITH YOUR ACTUAL RENDER BACKEND URL!
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "https://mantleguard-backend.onrender.com"
+// Backend URL: https://mantle-gaurd.onrender.com
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "https://mantle-gaurd.onrender.com"
 
 export const API_CONFIG = {
     baseUrl: BACKEND_URL,
