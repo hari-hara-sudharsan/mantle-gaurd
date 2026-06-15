@@ -14,12 +14,18 @@ export interface ApiError {
 // API Configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
+console.log("=== API Configuration ===")
+console.log("NEXT_PUBLIC_API_URL:", process.env.NEXT_PUBLIC_API_URL)
+console.log("NEXT_PUBLIC_MOCK_BACKEND:", process.env.NEXT_PUBLIC_MOCK_BACKEND)
+console.log("API_BASE_URL:", API_BASE_URL)
+
 // Standard API Client
 class ApiClient {
     private baseUrl: string
 
     constructor(baseUrl: string) {
         this.baseUrl = baseUrl
+        console.log("ApiClient initialized with baseUrl:", this.baseUrl)
     }
 
     private async request<T>(
@@ -27,6 +33,7 @@ class ApiClient {
         options: RequestInit = {}
     ): Promise<ApiResponse<T> | ApiError> {
         const url = `${this.baseUrl}${endpoint}`
+        console.log(`API Request: ${options.method || 'GET'} ${url}`)
 
         try {
             const response = await fetch(url, {
@@ -37,12 +44,15 @@ class ApiClient {
                 },
             })
 
+            console.log(`API Response: ${response.status} ${response.statusText}`)
+
             const data = await response.json()
 
             if (!response.ok) {
+                console.error("API Error:", data)
                 return {
                     success: false,
-                    error: data.error || "Request failed",
+                    error: data.error || data.detail || "Request failed",
                     details: data.details || response.statusText,
                 }
             }
@@ -53,9 +63,10 @@ class ApiClient {
                 message: data.message,
             }
         } catch (error) {
+            console.error("Network Error:", error)
             return {
                 success: false,
-                error: "Network error",
+                error: "Network error - Cannot reach backend",
                 details: error instanceof Error ? error.message : "Unknown error",
             }
         }

@@ -3,6 +3,10 @@ import { mockBackend, MOCK_MODE } from "./mock/mock-backend"
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
+console.log("=== Audit Service Configuration ===")
+console.log("API_BASE_URL:", API_BASE_URL)
+console.log("MOCK_MODE:", MOCK_MODE)
+
 export interface AuditRequest {
     contract: string
     analysisId?: string

@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/providers/theme-provider";
 import { QueryProvider } from "@/providers/query-provider";
 import { AnalysisProvider } from "@/providers/analysis-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { ApiStatusChecker } from "@/components/shared/api-status-checker";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -42,6 +43,7 @@ export default function RootLayout({
         >
           <QueryProvider>
             <AnalysisProvider>
+              <ApiStatusChecker />
               <AppShell>
                 {children}
               </AppShell>
