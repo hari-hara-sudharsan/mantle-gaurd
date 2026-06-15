@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: mantleguard-backend
+    runtime: python
+    region: oregon
+    plan: free
+    branch: main
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: MANTLE_RPC_URL
+        value: https://rpc.sepolia.mantle.xyz
+      - key: MANTLE_EXPLORER_URL
+        value: https://sepolia.mantlescan.xyz
+      - key: AUDIT_LOGGER_ADDRESS
+        value: 0xFc8cd61D26aF1A419B23F3bA08BE68aF3D9e827a
+      - key: PRIVATE_KEY
+        sync: false
+      - key: AUDIT_LOGGER_ABI_JSON
+        sync: false
+      - key: AUDIT_LOGGER_FUNCTION
+        value: logAudit
+      - key: AUDIT_LOGGER_GAS_LIMIT
+        value: 250000
+      - key: OPENAI_API_KEY
+        sync: false
+    healthCheckPath: /
