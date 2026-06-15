@@ -11,13 +11,15 @@ import "@rainbow-me/rainbowkit/styles.css"
 const chains = [mantle, mantleSepoliaTestnet] as const
 
 // Create wagmi config with Mantle network support
+const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "a01e311e5083a7d5ab2fa5e5c92eb3ff"
+
 const config = getDefaultConfig({
-    appName: "MantleGuard",
-    projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p",
+    appName: "MantleGuard - Smart Contract Security Suite",
+    projectId,
     chains,
     transports: {
-        [mantle.id]: http(),
-        [mantleSepoliaTestnet.id]: http(),
+        [mantle.id]: http("https://rpc.mantle.xyz"),
+        [mantleSepoliaTestnet.id]: http("https://rpc.sepolia.mantle.xyz"),
     },
     ssr: true,
 })

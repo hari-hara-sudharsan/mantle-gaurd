@@ -1,9 +1,12 @@
+"use client"
+
 import { Search, Bell, Sun, Moon, Menu } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { SidebarContent } from "./sidebar"
+import { WalletConnection } from "./wallet-connection"
 
 export function Topbar() {
     return (
@@ -41,10 +44,7 @@ export function Topbar() {
                     <Moon className="w-5 h-5 hidden dark:block" />
                 </Button>
 
-                {/* Placeholder for RainbowKit ConnectButton */}
-                <Button className="bg-primary text-black hover:bg-primary/90 shadow-neon font-semibold rounded-full h-9 px-6 font-sans">
-                    Connect Wallet
-                </Button>
+                <WalletConnection />
             </div>
         </header>
     )
