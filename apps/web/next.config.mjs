@@ -4,6 +4,10 @@ const nextConfig = {
         NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://mantle-gaurd.onrender.com',
         NEXT_PUBLIC_MOCK_BACKEND: process.env.NEXT_PUBLIC_MOCK_BACKEND || 'false',
     },
+    webpack: (config) => {
+        config.externals.push('pino-pretty', 'lokijs', 'encoding')
+        return config
+    },
     async rewrites() {
         return [
             {

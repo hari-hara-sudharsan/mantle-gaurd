@@ -4,10 +4,18 @@ import { ConnectButton } from "@rainbow-me/rainbowkit"
 
 export function WalletConnection() {
     return (
-        <ConnectButton
-            chainStatus="icon"
-            accountStatus="address"
-            showBalance={true}
-        />
+        <div className="wallet-connection-wrapper">
+            <ConnectButton
+                chainStatus="icon"
+                accountStatus={{
+                    smallScreen: 'avatar',
+                    largeScreen: 'full',
+                }}
+                showBalance={{
+                    smallScreen: false,
+                    largeScreen: true,
+                }}
+            />
+        </div>
     )
 }

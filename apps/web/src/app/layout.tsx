@@ -4,7 +4,6 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { AppShell } from "@/components/layout/app-shell";
 import { ThemeProvider } from "@/providers/theme-provider";
-import { QueryProvider } from "@/providers/query-provider";
 import { AnalysisProvider } from "@/providers/analysis-provider";
 import { WalletProvider } from "@/providers/wallet-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -43,15 +42,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <WalletProvider>
-            <QueryProvider>
-              <AnalysisProvider>
-                <ApiStatusChecker />
-                <AppShell>
-                  {children}
-                </AppShell>
-                <Toaster />
-              </AnalysisProvider>
-            </QueryProvider>
+            <AnalysisProvider>
+              <ApiStatusChecker />
+              <AppShell>
+                {children}
+              </AppShell>
+              <Toaster />
+            </AnalysisProvider>
           </WalletProvider>
         </ThemeProvider>
       </body>
