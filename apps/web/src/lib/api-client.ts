@@ -1,3 +1,5 @@
+import { API_CONFIG } from "@/config/api"
+
 // Standard API Response Types
 export interface ApiResponse<T = unknown> {
     success: true
@@ -12,12 +14,7 @@ export interface ApiError {
 }
 
 // API Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
-
-console.log("=== API Configuration ===")
-console.log("NEXT_PUBLIC_API_URL:", process.env.NEXT_PUBLIC_API_URL)
-console.log("NEXT_PUBLIC_MOCK_BACKEND:", process.env.NEXT_PUBLIC_MOCK_BACKEND)
-console.log("API_BASE_URL:", API_BASE_URL)
+const API_BASE_URL = API_CONFIG.baseUrl
 
 // Standard API Client
 class ApiClient {

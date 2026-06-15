@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { AlertCircle, CheckCircle2, Loader2, XCircle } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { API_CONFIG } from "@/config/api"
 
 type ApiStatus = "checking" | "connected" | "error" | "hidden"
 
@@ -16,36 +17,38 @@ export function ApiStatusChecker() {
     }, [])
 
     const checkApiConnection = async () => {
-        const url = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+        const url = API_CONFIG.baseUrl
         setApiUrl(url)
 
         try {
             console.log("Checking API connection to:", url)
             const controller = new AbortController()
-            const timeoutId = setTimeout(() => controller.abort(), 5000)
+            const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 seconds
 
             const response = await fetch(`${url}/`, {
                 method: "GET",
                 signal: controller.signal,
+                mode: 'cors',
             })
 
             clearTimeout(timeoutId)
 
             if (response.ok) {
                 const data = await response.json()
-                console.log("API Response:", data)
+                console.log("✅ API Response:", data)
                 setStatus("connected")
                 setTimeout(() => setStatus("hidden"), 3000)
             } else {
+                console.error("❌ Backend returned error:", response.status, response.statusText)
                 setStatus("error")
                 setErrorMessage(`Backend returned ${response.status}: ${response.statusText}`)
             }
         } catch (error) {
-            console.error("API Connection Error:", error)
+            console.error("❌ API Connection Error:", error)
             setStatus("error")
             if (error instanceof Error) {
                 if (error.name === "AbortError") {
-                    setErrorMessage("Connection timeout - Backend is not responding")
+                    setErrorMessage("Connection timeout - Backend is not responding after 10 seconds")
                 } else {
                     setErrorMessage(`Cannot reach backend: ${error.message}`)
                 }
@@ -92,9 +95,19 @@ export function ApiStatusChecker() {
                             <div className="flex-1">
                                 <p className="text-sm font-medium text-red-400 mb-1">Backend Connection Failed</p>
                                 <p className="text-xs text-red-300/80 mb-2">{errorMessage}</p>
-                                <div className="text-xs text-red-300/60 space-y-1">
+                                <div className="text-xs text-red-300/60 space-y-1 mb-3">
                                     <p><strong>API URL:</strong> {apiUrl}</p>
-                                    <p><strong>Mock Mode:</strong> {process.env.NEXT_PUBLIC_MOCK_BACKEND || "false"}</p>
+                                    <p><strong>Mock Mode:</strong> {API_CONFIG.mockMode ? "true" : "false"}</p>
+                                    <p className="text-yellow-400 mt-2">
+                                        ⚠️ Make sure your Render backend is deployed and running!
+                                    </p>
+                                    <p className="text-white/60 mt-2 pt-2 border-t border-red-500/20">
+                                        <strong>To fix:</strong><br />
+                                        1. Check Render dashboard - backend should be "Live"<br />
+                                        2. Test backend: Open {apiUrl} in new tab<br />
+                                        3. Update src/config/api.ts with correct URL<br />
+                                        4. Redeploy frontend
+                                    </p>
                                 </div>
                             </div>
                         </div>
