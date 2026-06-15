@@ -1,7 +1,7 @@
 {
-    "buildCommand": "cd ../.. && HUSKY=0 pnpm install --frozen-lockfile && pnpm run build --filter=web",
-    "devCommand": "pnpm run dev",
-    "installCommand": "HUSKY=0 pnpm install --frozen-lockfile",
+    "buildCommand": "pnpm turbo run build --filter=web",
+    "installCommand": "pnpm install --frozen-lockfile",
     "framework": "nextjs",
-    "outputDirectory": ".next"
+    "outputDirectory": ".next",
+    "ignoreCommand": "exit 0"
 }
