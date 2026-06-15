@@ -1,7 +1,8 @@
 import { ApiResponse, ApiError } from "@/lib/api-client"
 import { mockBackend, MOCK_MODE } from "./mock/mock-backend"
+import { API_CONFIG } from "@/config/api"
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+const API_BASE_URL = API_CONFIG.baseUrl
 
 // Copilot Types
 export interface CopilotMessage {

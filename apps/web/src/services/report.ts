@@ -1,5 +1,6 @@
 import { apiClient, ApiResponse, ApiError } from "@/lib/api-client"
 import { mockBackend, MOCK_MODE } from "./mock/mock-backend"
+import { API_CONFIG } from "@/config/api"
 
 // Report Types
 export interface ReportData {
@@ -108,9 +109,8 @@ export const reportService = {
             return new Blob([content], { type: 'application/json' })
         }
 
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
         const response = await fetch(
-            `${API_BASE_URL}/api/report/${reportId}/download?format=${format}`
+            `${API_CONFIG.baseUrl}/api/report/${reportId}/download?format=${format}`
         )
         return response.blob()
     },
