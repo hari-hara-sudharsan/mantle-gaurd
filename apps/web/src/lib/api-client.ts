@@ -1,5 +1,4 @@
 import { API_CONFIG } from "@/config/api"
-import axios from 'axios'
 
 // Standard API Response Types
 export interface ApiResponse<T = unknown> {
@@ -17,51 +16,8 @@ export interface ApiError {
 // API Configuration
 const API_BASE_URL = API_CONFIG.baseUrl
 
-// Create axios instance with interceptors
-export const apiClient = axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-})
-
-// Request interceptor to add auth token
-apiClient.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('auth_token')
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`
-        }
-        console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`)
-        return config
-    },
-    (error) => {
-        console.error('Request interceptor error:', error)
-        return Promise.reject(error)
-    }
-)
-
-// Response interceptor to handle errors
-apiClient.interceptors.response.use(
-    (response) => {
-        console.log(`API Response: ${response.status} ${response.statusText}`)
-        return response
-    },
-    (error) => {
-        console.error('API Error:', error.response?.data || error.message)
-
-        // If token is invalid or expired, clear auth
-        if (error.response?.status === 401) {
-            localStorage.removeItem('auth_token')
-            localStorage.removeItem('user')
-        }
-
-        return Promise.reject(error)
-    }
-)
-
-// Legacy API Client (for backward compatibility)
-class ApiClientLegacy {
+// Standard API Client
+class ApiClient {
     private baseUrl: string
 
     constructor(baseUrl: string) {
@@ -74,8 +30,6 @@ class ApiClientLegacy {
         options: RequestInit = {}
     ): Promise<ApiResponse<T> | ApiError> {
         const url = `${this.baseUrl}${endpoint}`
-        const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null
-
         console.log(`API Request: ${options.method || 'GET'} ${url}`)
 
         try {
@@ -83,7 +37,6 @@ class ApiClientLegacy {
                 ...options,
                 headers: {
                     "Content-Type": "application/json",
-                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
                     ...options.headers,
                 },
             })
@@ -94,13 +47,6 @@ class ApiClientLegacy {
 
             if (!response.ok) {
                 console.error("API Error:", data)
-
-                // If unauthorized, clear auth
-                if (response.status === 401) {
-                    localStorage.removeItem('auth_token')
-                    localStorage.removeItem('user')
-                }
-
                 return {
                     success: false,
                     error: data.error || data.detail || "Request failed",
@@ -146,4 +92,4 @@ class ApiClientLegacy {
     }
 }
 
-export const apiClientLegacy = new ApiClientLegacy(API_BASE_URL)
+export const apiClient = new ApiClient(API_BASE_URL)

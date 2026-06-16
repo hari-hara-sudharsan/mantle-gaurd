@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { AppShell } from "@/components/layout/app-shell";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { AnalysisProvider } from "@/providers/analysis-provider";
-import { AuthProvider } from "@/providers/auth-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { ApiStatusChecker } from "@/components/shared/api-status-checker";
 
@@ -41,15 +40,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>
-            <AnalysisProvider>
-              <ApiStatusChecker />
-              <AppShell>
-                {children}
-              </AppShell>
-              <Toaster />
-            </AnalysisProvider>
-          </AuthProvider>
+          <AnalysisProvider>
+            <ApiStatusChecker />
+            <AppShell>
+              {children}
+            </AppShell>
+            <Toaster />
+          </AnalysisProvider>
         </ThemeProvider>
       </body>
     </html>
