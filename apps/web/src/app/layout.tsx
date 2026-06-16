@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { AppShell } from "@/components/layout/app-shell";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { AnalysisProvider } from "@/providers/analysis-provider";
-import { WagmiProviderWrapper } from "@/providers/wagmi-provider";
+import { AuthProvider } from "@/providers/auth-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { ApiStatusChecker } from "@/components/shared/api-status-checker";
 
@@ -41,7 +41,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <WagmiProviderWrapper>
+          <AuthProvider>
             <AnalysisProvider>
               <ApiStatusChecker />
               <AppShell>
@@ -49,7 +49,7 @@ export default function RootLayout({
               </AppShell>
               <Toaster />
             </AnalysisProvider>
-          </WagmiProviderWrapper>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
