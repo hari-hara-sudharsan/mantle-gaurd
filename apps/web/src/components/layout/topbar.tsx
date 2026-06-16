@@ -1,5 +1,6 @@
 "use client"
 
+// NO WALLET CONNECTION - COMPLETELY REMOVED
 import { Search, Bell, Sun, Moon, Menu } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
