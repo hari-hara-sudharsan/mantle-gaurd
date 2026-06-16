@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit'
 import { config } from '@/config/wagmi'
 import { ReactNode, useState } from 'react'
-import '@rainbow-me/rainbowkit/styles.css'
 
 export function WagmiProviderWrapper({ children }: { children: ReactNode }) {
     const [queryClient] = useState(() => new QueryClient({
