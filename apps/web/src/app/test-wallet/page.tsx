@@ -1,7 +1,7 @@
 "use client"
 
 import { useAccount, useBalance, useChainId } from "wagmi"
-import { WalletConnection } from "@/components/layout/wallet-connection"
+import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { Card } from "@/components/ui/card"
 
 export default function TestWalletPage() {
@@ -12,21 +12,21 @@ export default function TestWalletPage() {
     return (
         <div className="min-h-screen p-8">
             <div className="max-w-2xl mx-auto space-y-6">
-                <h1 className="text-3xl font-bold text-white mb-8">Wallet Connection Test</h1>
+                <h1 className="text-3xl font-bold text-white mb-8">🔗 Wallet Connection Test</h1>
 
                 <Card className="p-6 bg-card/50">
                     <h2 className="text-xl font-semibold text-white mb-4">Connect Your Wallet</h2>
-                    <WalletConnection />
+                    <ConnectButton />
                 </Card>
 
                 {isConnected && (
                     <Card className="p-6 bg-card/50 space-y-4">
-                        <h2 className="text-xl font-semibold text-white mb-4">Connection Details</h2>
+                        <h2 className="text-xl font-semibold text-white mb-4">✅ Connection Details</h2>
 
                         <div className="space-y-2">
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Status:</span>
-                                <span className="text-green-500 font-semibold">✅ Connected</span>
+                                <span className="text-green-500 font-semibold">Connected</span>
                             </div>
 
                             <div className="flex justify-between">
