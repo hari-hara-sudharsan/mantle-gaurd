@@ -1,6 +1,7 @@
 "use client"
 
-// NO WALLET CONNECTION - COMPLETELY REMOVED
+// NO WALLET CONNECTION - COMPLETELY REMOVED - Last updated: 2026-06-16
+// Force rebuild timestamp: 1718569200
 import { Search, Bell, Sun, Moon, Menu } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
