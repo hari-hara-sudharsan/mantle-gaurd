@@ -1,3 +1,5 @@
+// FORCE CLEAN BUILD - TIMESTAMP: 2026-06-19-12:30:00
+// NO WALLET BUTTONS EXIST IN THIS CODEBASE
 import { Sidebar } from "./sidebar"
 import { Topbar } from "./topbar"
 
