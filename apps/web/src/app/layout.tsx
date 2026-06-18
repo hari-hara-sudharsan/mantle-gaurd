@@ -20,7 +20,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "MantleGuard - Smart Contract Security Platform",
+  title: "MantleGuard - Smart Contract Security Platform - v2.0.1",
   description: "Comprehensive security auditing and gas optimization for Mantle Network smart contracts",
 };
 
