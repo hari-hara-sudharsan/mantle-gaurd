@@ -42,7 +42,7 @@ const fetchDashboardSummary = async () => {
         actions: [
             "Review pending security alert for vault-v2.",
             "Approve recommended gas optimizations.",
-            "Sync wallet and verify contract owners.",
+            "Verify contract owners.",
         ],
     }
 }

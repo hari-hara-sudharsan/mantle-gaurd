@@ -5,8 +5,17 @@ import { motion } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
 import { PageHeader } from "@/components/shared/page-header"
 import { CheckCircle2, XCircle, Upload, Hash, Shield, ExternalLink } from "lucide-react"
-import { walletService, VerifyAuditResponse } from "@/services"
 import { cn } from "@/lib/utils"
+
+interface VerifyAuditResponse {
+    verified: boolean
+    match: boolean
+    transactionHash?: string
+    blockNumber?: number
+    timestamp?: number
+    walletAddress?: string
+    onChainHash?: string
+}
 
 export default function VerifyPage() {
     const [reportFile, setReportFile] = useState<File | null>(null)
@@ -46,19 +55,9 @@ export default function VerifyPage() {
         setError(null)
 
         try {
-            const result = await walletService.verifyAudit({ reportHash })
-
-            if (!result.success) {
-                setError(result.error || "Verification failed")
-                return
-            }
-
-            if (!result.data) {
-                setError("Verification response was empty")
-                return
-            }
-
-            setVerificationResult(result.data)
+            // Verification disabled - wallet service removed
+            setError("Verification feature is currently unavailable")
+            setLoading(false)
         } catch (err) {
             setError(err instanceof Error ? err.message : "Verification failed")
         } finally {

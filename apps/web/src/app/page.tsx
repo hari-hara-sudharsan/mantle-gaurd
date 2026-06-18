@@ -1,5 +1,6 @@
 ﻿"use client";
 
+// FORCE REBUILD - NO WALLET BUTTONS - 2026-06-19 12:00
 import { LandingHero } from "@/components/dashboard/landing-hero";
 import { SectionCard } from "@/components/shared/section-card";
 import { Shield, Zap, Terminal } from "lucide-react";
@@ -9,7 +10,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col w-full">
       <LandingHero />
-      
+
       <section className="py-24 px-6 max-w-7xl mx-auto w-full">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white">The Security Standard for Mantle</h2>

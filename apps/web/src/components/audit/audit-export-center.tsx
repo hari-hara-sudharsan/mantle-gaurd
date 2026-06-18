@@ -21,7 +21,6 @@ import {
 } from "lucide-react"
 import { AuditData } from "./audit-experience"
 import { generateAuditPDF } from "@/lib/pdf-generator"
-import { walletService, type AuditHashLogResponse } from "@/services"
 import {
     shareToGitHub,
     shareToTwitter,
@@ -32,6 +31,14 @@ import {
     generateCLICommands
 } from "@/lib/share-utils"
 import { toast } from "sonner"
+
+interface AuditHashLogResponse {
+    auditHash: string
+    transactionHash: string
+    blockNumber: number
+    gasUsed?: number
+    mantleChainLink?: string
+}
 
 interface AuditExportCenterProps {
     data: AuditData
@@ -127,28 +134,8 @@ export function AuditExportCenter({ data, contractCode }: AuditExportCenterProps
         setExportStatus(null)
 
         try {
-            const result = await walletService.registerAudit({
-                contractCode,
-                auditResult: data,
-                report: {
-                    timestamp: new Date().toISOString(),
-                    securityScore: data.securityScore,
-                    issues: data.issues,
-                    mantleInsights: data.mantleInsights,
-                },
-            })
-
-            if (!result.success) {
-                throw new Error(result.error || "Audit registration failed")
-            }
-
-            if (!result.data) {
-                throw new Error("Audit registration response was empty")
-            }
-
-            setRegistrationResult(result.data)
-            setExportStatus("Audit registered on Mantle!")
-            toast.success("Audit proof stored on Mantle")
+            // Audit registration disabled - wallet service removed
+            throw new Error("Audit registration feature is currently unavailable")
         } catch (error) {
             const message = error instanceof Error ? error.message : "Audit registration failed"
             setExportStatus(message)

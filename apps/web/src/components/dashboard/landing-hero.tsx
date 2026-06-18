@@ -1,5 +1,6 @@
 "use client";
 
+// NO WALLET BUTTONS - FORCED CLEAN BUILD - 2026-06-19
 import { motion } from "framer-motion";
 import { GradientText } from "@/components/shared/gradient-text";
 import { GlowButton } from "@/components/shared/glow-button";

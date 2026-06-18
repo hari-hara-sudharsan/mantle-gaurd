@@ -14,7 +14,6 @@ const settingsSchema = z.object({
     username: z.string().min(2, "Enter a handle"),
     email: z.string().email("Enter a valid email"),
     alertThreshold: z.number().min(0).max(100),
-    walletAddress: z.string().min(42, "Enter a valid wallet address"),
     notes: z.string().optional(),
 })
 
@@ -24,7 +23,6 @@ const defaultValues: SettingsFormValues = {
     username: "mantle_guard",
     email: "hello@mantleguard.io",
     alertThreshold: 65,
-    walletAddress: "0x0000000000000000000000000000000000000000",
     notes: "",
 }
 
@@ -47,11 +45,11 @@ export default function SettingsPage() {
         <div className="min-h-screen">
             <PageHeader
                 title="Settings"
-                description="Configure your MantleGuard workspace, wallet connections, and alert preferences."
+                description="Configure your MantleGuard workspace and alert preferences."
             />
 
             <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6 lg:grid-cols-[minmax(360px,400px)_1fr]">
-                <SectionCard title="Profile" description="Personal and wallet settings">
+                <SectionCard title="Profile" description="Personal settings">
                     <div className="space-y-5">
                         <div className="grid gap-2">
                             <Label htmlFor="username">Username</Label>
@@ -62,11 +60,6 @@ export default function SettingsPage() {
                             <Label htmlFor="email">Email address</Label>
                             <Input id="email" type="email" {...register("email")} />
                             {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="walletAddress">Connected wallet</Label>
-                            <Input id="walletAddress" {...register("walletAddress")} />
-                            {errors.walletAddress && <p className="text-sm text-destructive">{errors.walletAddress.message}</p>}
                         </div>
                     </div>
                 </SectionCard>
